@@ -1,0 +1,9 @@
+{
+    "api_url": "https://api.datam.site/search",
+    "api_token": "123123213213",
+    "hide_on_capture": true,
+    "always_on_top": false,
+    "hotkey_capture": "ctrl+q",
+    "hotkey_search": "ctrl+w",
+    "screenshot_filename": "screenshot.png"
+}
