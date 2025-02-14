@@ -23,6 +23,10 @@ def create_software_settings_gui():
                                 default_value=config.get("search_auto", False),
                                 callback=lambda s: cbs.set_search_auto(dpg.get_value(s)),
                                 tag="search_auto_checkbox")
+            with dpg.group(horizontal=True):
+                dpg.add_checkbox(label="自动复制答案",default_value=config.get("auto_copy", False),
+                                callback=lambda s: cbs.set_auto_copy(dpg.get_value(s)),
+                                tag="auto_copy_checkbox")
             dpg.add_input_text(label="截图快捷键",default_value=config.get("hotkey_capture", "ctrl+q"))
             dpg.add_input_text(label="搜索快捷键",default_value=config.get("hotkey_search", "ctrl+w"))
 
@@ -61,7 +65,7 @@ def create_ocr_gui():
         dpg.add_text("OCR参数设置")
         with dpg.tree_node(label="阿里百炼OCR"):
             dpg.add_input_text(label="API密钥",default_value=config.get("ocr/ali-ocr/api_key"),tag="ocr/ali-ocr/api_key",password=True)
-        
+            dpg.add_button(label="阿里百炼官网",tag="ocr_ali_text",callback=lambda: cbs.openlink("https://bailian.console.aliyun.com/"))
         with dpg.tree_node(label="PaddleOCR"):
             dpg.add_input_text(label="模型路径",default_value=config.get("ocr/paddle-ocr/model_path"),tag="ocr/paddle-ocr/model_path")
             dpg.add_input_text(label="字典路径",default_value=config.get("ocr/paddle-ocr/dict_path"),tag="ocr/paddle-ocr/dict_path")
@@ -84,7 +88,6 @@ def create_func_gui():
                 dpg.add_button(label="截图", callback=lambda: cbs.capture_interactive_screenshot(), tag="btn_capture")
                 dpg.add_button(label="OCR识别", callback=lambda: cbs.ocr_recognize(), tag="btn_ocr_recognize")
                 dpg.add_button(label="搜索", callback=lambda: cbs.search_question_wrapper(), tag="btn_search")
-
             dpg.add_text("", tag="search_result_tag")
             dpg.add_spacer(height=10)
 

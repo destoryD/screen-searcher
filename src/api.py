@@ -1,9 +1,9 @@
 # src/api.py
 import requests
-from utils import log_message
+from utils import log_message,copy_to_clipboard
 from config import config 
 import json
-
+from typing import Dict
 def search(query, timeout=30):
     """
     发送图片到指定的API进行搜索。
@@ -39,9 +39,29 @@ def search(query, timeout=30):
     req = requests.post(api_url, json=json_params, timeout=timeout,headers=headers)
     if req.status_code == 200:
         data = req.json()
+        res = resolve_context(data)
         log_message("查询返回数据："+json.dumps(data, ensure_ascii=False))
-        return data
+        log_message("答案：{}".format(res))
+        if config.get("auto_copy"):
+            copy_to_clipboard(res)
+        return res
     else:
         log_message(f"Error: {req.status_code} - {req.text}")
 
     return None
+
+def resolve_context(context:Dict):
+    success = context.get("success")
+    error_msg = context.get("error")
+    query_type = context.get("data").get("type",0)
+    if success:
+        if query_type == 0:
+            return context["data"]["others"]
+        elif query_type == 1:
+            result = ",".join(context["data"]["choose"])
+            return result
+        elif query_type == 2:
+            return context["data"]["fill"]
+        elif query_type == 3:
+            return context["data"]["judge"]
+    return error_msg

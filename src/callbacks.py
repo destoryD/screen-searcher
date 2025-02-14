@@ -15,13 +15,16 @@ def search_question_wrapper():
     if not os.path.exists(screenshot_filename):
         dpg.set_value("search_result_tag", "错误：请先截图")
         return
+    type_params = {"单选题":"【单选题】","多选题":"【多选题】","判断题":"【判断题】","填空题":"【填空题】","其他类型题目":"【其他类型题目】"}
     query = dpg.get_value("recognition_context")
-    log_message("开始请求API")
+    query_type = dpg.get_value("search/query_type")
+    query = type_params.get(query_type,'') + query
+    log_message("题目类型为：{} 开始请求API".format(query_type))
     # 调用搜索图片函数，获取搜索结果
     result = search(query)
     # 如果搜索结果不为空，则设置搜索结果标签为找到的结果数量
     if result:
-       dpg.set_value("search_result_tag", result)
+       dpg.set_value("search_result_tag", "答案: "+ result)
 
 def save_settings():
     """保存设置到配置文件"""
@@ -29,11 +32,13 @@ def save_settings():
     config.set("hotkey_search", dpg.get_value('hotkey_search'))
     log_message("设置已保存,重启后生效！")
 
+def set_auto_copy(value):
+    """保存设置到配置文件"""
+    config.set("auto_copy", value)
+
 def set_ocr_auto(value):
     """保存设置到配置文件"""
     config.set("ocr_auto", value)
-    if value:
-        dpg.enable_item()
 
 def set_search_auto(value):
     """保存设置到配置文件"""

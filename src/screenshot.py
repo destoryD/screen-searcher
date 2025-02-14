@@ -103,7 +103,7 @@ class ScreenShot():
         # 无边框，没有最小化最大化关闭这几个按钮，也无法拖动这个窗体，程序的窗体在Windows系统任务栏上也消失
         self.win.overrideredirect(True)
         self.win.attributes('-alpha', 0.25)
-
+        self.win.wm_attributes('-topmost',1)
         self.is_selecting = False
 
         # 绑定按 Enter 确认, Esc 退出

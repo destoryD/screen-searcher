@@ -8,15 +8,16 @@
     "hide_on_capture": true,
     "always_on_top": false,
     "hotkey_capture": "ctrl+q",
-    "hotkey_search": "ctrl+w",
+    "hotkey_search": "ctrl+s",
     "screenshot_filename": "screenshot.png",
     "ocr": {
         "model": "阿里百炼OCR",
         "ali-ocr": {
-            "api_key": ""
+            "api_key": "sk-"
         },
         "paddle-ocr": {}
     },
     "ocr_auto": true,
-    "search_auto": true
+    "search_auto": true,
+    "auto_copy": true
 }

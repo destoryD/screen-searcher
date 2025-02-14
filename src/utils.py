@@ -1,5 +1,6 @@
 # src/utils.py
 import datetime
+import pyperclip
 def log_message(message, log_output_tag="log_output", max_length=10):
     """
     更新日志消息到 Dear PyGui 的文本组件。
@@ -20,3 +21,6 @@ def log_message(message, log_output_tag="log_output", max_length=10):
         message = message.split('\n')[:max_length]  # 保留最新的max_length行
         message = '\n'.join(message)
     dpg.set_value(log_output_tag, message)
+
+def copy_to_clipboard(message):
+    pyperclip.copy(message)
