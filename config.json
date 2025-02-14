@@ -1,9 +1,22 @@
 {
-    "api_url": "https://api.datam.site/search",
-    "api_token": "123123213213",
+    "search": {
+        "api_url": "https://api.datam.site/search",
+        "api_token": "",
+        "query_type": "单选题",
+        "api_model": "deepseek-v3"
+    },
     "hide_on_capture": true,
     "always_on_top": false,
     "hotkey_capture": "ctrl+q",
     "hotkey_search": "ctrl+w",
-    "screenshot_filename": "screenshot.png"
+    "screenshot_filename": "screenshot.png",
+    "ocr": {
+        "model": "阿里百炼OCR",
+        "ali-ocr": {
+            "api_key": ""
+        },
+        "paddle-ocr": {}
+    },
+    "ocr_auto": true,
+    "search_auto": true
 }
