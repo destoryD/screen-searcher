@@ -37,24 +37,25 @@ def create_software_settings_gui():
 def create_search_gui():
     with dpg.collapsing_header(label="答题API设置",default_open=False):
         dpg.add_text("答题API设置")
-        dpg.add_input_text(label="API地址",
-                                            default_value=config.get("search/api_url"),
-                                            width=400,
-                                            tag="search/api_url")
-        dpg.add_input_text(label="Token",
-                                                password=True,
-                                                default_value=config.get("search/api_token"),
+        with dpg.tree_node(label="LIKE知识库"):
+            dpg.add_input_text(label="API地址",
+                                                default_value=config.get("search/api_url"),
                                                 width=400,
-                                                tag="search/api_token")
-        
-        dpg.add_button(label="还没有Token? 点此即可申请Token",tag="apply_token_text",callback=lambda: cbs.openlink("https://www.datam.site/doc/apply_token"))
+                                                tag="search/api_url")
+            dpg.add_input_text(label="Token",
+                                                    password=True,
+                                                    default_value=config.get("search/api_token"),
+                                                    width=400,
+                                                    tag="search/api_token")
+            
+            dpg.add_button(label="还没有Token? 点此即可申请Token",tag="apply_token_text",callback=lambda: cbs.openlink("https://www.datam.site/doc/apply_token"))
 
-        dpg.add_combo(label="模型选择",default_value=config.get("search/api_model","deepseek-v3"),
-                      items=["deepseek-v3","deepseek-r1","gpt-4o","o3-mini","gemini-2.0-pro-exp","基础推理模型","免费模型(充值用户使用)"],
-                      tag="search/api_model",callback=lambda s: cbs.set_query_model(dpg.get_value(s)))
-        with dpg.group(horizontal=True):
-            dpg.add_button(label="保存API配置", callback=lambda: cbs.save_api_config())
-            dpg.add_button(label="复制Token", callback=lambda: cbs.copy_token())
+            dpg.add_combo(label="模型选择",default_value=config.get("search/api_model","deepseek-v3"),
+                        items=["deepseek-v3","deepseek-r1","gpt-4o","o3-mini","gemini-2.0-pro-exp","基础推理模型","免费模型(充值用户使用)"],
+                        tag="search/api_model",callback=lambda s: cbs.set_query_model(dpg.get_value(s)))
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="保存API配置", callback=lambda: cbs.save_api_config())
+                dpg.add_button(label="复制Token", callback=lambda: cbs.copy_token())
 
         dpg.add_separator()
 
