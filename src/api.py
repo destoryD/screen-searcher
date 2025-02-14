@@ -1,10 +1,10 @@
 # src/api.py
 import requests
 from utils import log_message
-from config import config  # Import the config object
+from config import config 
+import json
 
-
-def search_image(image_path, timeout=10): #移除api_url, api_token参数
+def search(query, timeout=30):
     """
     发送图片到指定的API进行搜索。
 
@@ -15,33 +15,33 @@ def search_image(image_path, timeout=10): #移除api_url, api_token参数
     Returns:
         dict: API响应的JSON数据, 如果请求失败则返回None。
     """
-    api_url = config.get("api_url") # 使用config.get
-    api_token = config.get("api_token")
-    log_max_length = config.get("log_max_length")
-
+    model_params = {"免费模型(充值用户使用)": "free", "基础推理模型": "basic"}
+    api_url = config.get("search/api_url") 
+    api_token = config.get("search/api_token")
+    api_model = config.get("search/api_model")
+    if api_model in model_params:
+        api_model = model_params[api_model]
+    enable_search = config.get("search/api_search",False)
     if not api_url.startswith("http"):
-        log_message("错误：API地址格式无效")
+        log_message("错误:API地址格式无效")
         return None
-    if not image_path:
-         log_message("图片路径无效")
-         return None
+    
+    headers = {
+    'Content-Type': 'application/json',
+    }
 
-    try:
-        with open(image_path, 'rb') as f:
-            response = requests.post(
-                api_url,
-                headers={'Authorization': f'Bearer {api_token}'},
-                files={'image': f},
-                timeout=timeout
-            )
-            response.raise_for_status()  # 检查HTTP错误
-            result = response.json()
-            log_message(f"API响应：{(str(result), log_max_length)}")
-            return result
+    json_params = {
+        "query": query,
+        "token": api_token,
+        "model": api_model,
+        "search": enable_search
+    }
+    req = requests.post(api_url, json=json_params, timeout=timeout,headers=headers)
+    if req.status_code == 200:
+        data = req.json()
+        log_message("查询返回数据："+json.dumps(data, ensure_ascii=False))
+        return data
+    else:
+        log_message(f"Error: {req.status_code} - {req.text}")
 
-    except requests.exceptions.RequestException as e:
-        log_message(f"API错误：{str(e)}")
-        return None
-    except Exception as e:
-        log_message(f"意外错误：{str(e)}")
-        return None
+    return None

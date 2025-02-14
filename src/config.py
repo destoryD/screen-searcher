@@ -45,12 +45,25 @@ class Config:
 
 
     def get(self, key, default=None):
-        """获取配置项的值。"""
-        return self._config_data.get(key, default)
+        """获取配置项的值。支持用/分隔的嵌套key，如'ocr/model/test'。"""
+        try:
+            keys = key.split('/')
+            value = self._config_data
+            for k in keys:
+                value = value[k]
+            return value
+        except (KeyError, TypeError):
+            return default
 
     def set(self, key, value):
-        """设置配置项的值。"""
-        self._config_data[key] = value
+        """设置配置项的值。支持用/分隔的嵌套key，如'ocr/model/test'。"""
+        keys = key.split('/')
+        current = self._config_data
+        for k in keys[:-1]:
+            if k not in current or not isinstance(current[k], dict):
+                current[k] = {}
+            current = current[k]
+        current[keys[-1]] = value
         self.save_config()  # 每次设置都保存，简化操作
 
 

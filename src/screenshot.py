@@ -7,8 +7,6 @@ from win32.win32api import GetSystemMetrics
 
 import tkinter as tk
 from PIL import ImageGrab
-from config import config
-from utils import log_message
 def get_real_resolution():
     """获取真实的分辨率"""
     hDC = win32gui.GetDC(0)
@@ -139,7 +137,7 @@ class ScreenShot():
             self.img = img
 
     def confirmScreenShot(self, event=None):
-        img = self.captureImage()
+        self.captureImage()
         # if img is not None:
         #     img.show()
         if self.win:
@@ -160,22 +158,3 @@ class ScreenShot():
         print("End")
         self.is_selecting = False
         self.confirmScreenShot()
-
-
-def capture_interactive_screenshot():
-    """
-    Captures an interactive screenshot using the ScreenShot class and returns the captured image.
-    Returns:
-        PIL.Image.Image or None: The captured image if successful, None otherwise.
-    """
-    import dearpygui.dearpygui as dpg
-    pos = dpg.get_viewport_pos()
-    #print(dpg.get_viewport_configuration('Searcher'))
-    if config.get("hide_on_capture",False):
-        dpg.configure_viewport("Searcher",x_pos=-10000,y_pos=-10000)
-    screenshot_tool = ScreenShot()  # Instantiate the ScreenShot class
-    img = screenshot_tool.img # Capture the image
-    img.save(config.get("screenshot_filename","screenshot.png"))
-    dpg.set_viewport_pos(pos)
-    log_message("截图完成")
-    return img # Capture and return the image
