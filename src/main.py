@@ -3,15 +3,12 @@ import dearpygui.dearpygui as dpg
 from config import config
 import hotkeys
 import gui
-
+import callbacks as cbs
 def init_settings():
     dpg.set_viewport_always_top(config.get("always_on_top", False))
 
 if __name__ == '__main__':
     dpg.create_context()
-
-    # Global variable to hold the screenshot instance
-    screenshot_instance = None
 
     # 加载字体
     with dpg.font_registry():
@@ -21,7 +18,7 @@ if __name__ == '__main__':
             dpg.add_font_range(0x1, 0x400)
             dpg.bind_font(font)
 
-    dpg.create_viewport(title='Searcher', width=900, height=600, min_width=400, min_height=300)
+    dpg.create_viewport(title='Searcher', width=700, height=800, min_width=400, min_height=300)
 
     with dpg.window(tag="MainWindow"):
         gui.create_software_settings_gui()
@@ -31,6 +28,7 @@ if __name__ == '__main__':
         gui.create_log_gui()
 
     init_settings()
+    cbs.set_ocr_model(config.get("ocr/model"))
     hotkeys.handle_hotkey()
     dpg.set_primary_window("MainWindow", True)
     dpg.setup_dearpygui()

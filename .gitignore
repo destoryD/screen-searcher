@@ -1,5 +1,5 @@
 #忽略__pycache__
-src/__pycache__/
+**__pycache__**
 
 #忽略.idea
 .idea/

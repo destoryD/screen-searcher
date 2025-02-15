@@ -43,3 +43,85 @@ class Qwen_MODEL(OCR_MODEL):
                 }
             ])
         return completion.choices[0].message.content
+class PaddleOCR_MODEL(OCR_MODEL):
+    def __init__(self,ocr_version="PP-OCRv4"):
+        super().__init__("PaddleOCR", "paddleocr")
+        from paddleocr import PaddleOCR
+        print(ocr_version)
+        self.ocr_model = PaddleOCR(use_gpu=False,ocr_version=ocr_version)
+    def recognize(self, image_path=None):
+        if image_path is None:
+            image_path = config.get("screenshot_filename")
+        result = self.ocr_model.ocr(image_path,det=True)
+        res = self.resolve_context(result)
+        return res
+    
+    def resolve_context(self,result):
+        res = ""
+        for lines in result:
+            for item in lines:
+                res += item[-1][0]
+                res +='\n'
+        return res
+
+class Sili_MODEL(OCR_MODEL):
+    def __init__(self,api_key="",model="Pro/Qwen/Qwen2-VL-7B-Instruct"):
+        super().__init__("硅基流动", "sili-ocr")
+        self.api_key = api_key
+        self.model = model
+    def recognize(self, image_path=None):
+        if image_path is None:
+            image_path = config.get("screenshot_filename")
+        image = self.process_image(image_path)
+        client = OpenAI(
+            api_key=self.api_key,
+            base_url="https://api.siliconflow.cn/v1",
+        )
+        completion = client.chat.completions.create(
+            model=self.model,
+            max_tokens=1024,
+            temperature=0.7,
+            top_p=0.7,
+            frequency_penalty=0.0,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{image}"},
+                        },
+                        {"type": "text", "text": "Read all the text in the image with no other outputs."},
+                    ]
+                }
+            ])
+        return completion.choices[0].message.content
+
+class Zhipu_MODEL(OCR_MODEL):
+    def __init__(self,api_key="",model="GLM-4V-Flash"):
+        super().__init__("智谱AI", "zhipu-ocr")
+        self.api_key = api_key
+        self.model = model
+    def recognize(self, image_path=None):
+        if image_path is None:
+            image_path = config.get("screenshot_filename")
+        image = self.process_image(image_path)
+        client = OpenAI(
+            api_key=self.api_key,
+            base_url="https://open.bigmodel.cn/api/paas/v4/",
+        )
+        completion = client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/png;base64,{image}"},
+                        },
+                        {"type": "text", "text": "Read all the text in the image with no other outputs."},
+                    ]
+                }
+            ])
+        return completion.choices[0].message.content

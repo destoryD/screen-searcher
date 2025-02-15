@@ -16,12 +16,12 @@ def search(query, timeout=30):
         dict: API响应的JSON数据, 如果请求失败则返回None。
     """
     model_params = {"免费模型(充值用户使用)": "free", "基础推理模型": "basic"}
-    api_url = config.get("search/api_url") 
-    api_token = config.get("search/api_token")
-    api_model = config.get("search/api_model")
+    api_url = config.get("search/like/api_url") 
+    api_token = config.get("search/like/api_token")
+    api_model = config.get("search/like/api_model","")
     if api_model in model_params:
         api_model = model_params[api_model]
-    enable_search = config.get("search/api_search",False)
+    enable_search = config.get("search/like/api_search",False)
     if not api_url.startswith("http"):
         log_message("错误:API地址格式无效")
         return None
