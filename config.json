@@ -18,17 +18,17 @@
     "ocr": {
         "model": "智谱AI",
         "ali-ocr": {
-            "api_key": "sk-9844c4fbf71f4b1c9fdf7703fc1eedb9"
+            "api_key": ""
         },
         "paddle-ocr": {
             "lang": "ch",
             "model": "PP-OCRv4"
         },
         "sili-ocr": {
-            "api_key": "sk-tknzgnrclaqlxzmmqcapmxxiyaquouhnhupbpucrbxqlkrgi"
+            "api_key": ""
         },
         "zhipu-ocr": {
-            "api_key": "92335fc472bc46eb969699585072aa14.twa7Pvl5L5aGzm1q"
+            "api_key": ""
         }
     },
     "ocr_auto": true,
