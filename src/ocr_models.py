@@ -44,11 +44,11 @@ class Qwen_MODEL(OCR_MODEL):
             ])
         return completion.choices[0].message.content
 class PaddleOCR_MODEL(OCR_MODEL):
-    def __init__(self,ocr_version="PP-OCRv4"):
+    def __init__(self,lang="ch",ocr_version="PP-OCRv4"):
         super().__init__("PaddleOCR", "paddleocr")
         from paddleocr import PaddleOCR
         print(ocr_version)
-        self.ocr_model = PaddleOCR(use_gpu=False,ocr_version=ocr_version)
+        self.ocr_model = PaddleOCR(use_gpu=False,lang=lang,ocr_version=ocr_version)
     def recognize(self, image_path=None):
         if image_path is None:
             image_path = config.get("screenshot_filename")

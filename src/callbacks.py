@@ -99,7 +99,7 @@ def set_ocr_model(value):
     if config.get("ocr/model") == "阿里百炼OCR":
         global_vars.ocr_model = Qwen_MODEL(config.get("ocr/ali-ocr/api_key"))
     elif config.get("ocr/model") == "PaddleOCR":
-        global_vars.ocr_model = PaddleOCR_MODEL(ocr_version=config.get("ocr/paddle-ocr/model"))
+        global_vars.ocr_model = PaddleOCR_MODEL(lang=config.get("ocr/paddle-ocr/lang"),ocr_version=config.get("ocr/paddle-ocr/model"))
     elif config.get("ocr/model") == "硅基流动":
         global_vars.ocr_model = Sili_MODEL(config.get("ocr/sili-ocr/api_key"))
     elif config.get("ocr/model") == "智谱AI":

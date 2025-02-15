@@ -1,10 +1,12 @@
 {
     "search": {
+        "api_url": "https://api.datam.site/search",
+        "api_token": "",
         "query_type": "单选题",
         "like": {
             "api_model": "deepseek-v3",
             "api_url": "https://api.datam.site/search",
-            "api_token": "",
+            "api_token": "test123",
             "api_search": false
         }
     },
@@ -14,19 +16,19 @@
     "hotkey_search": "win+alt+s",
     "screenshot_filename": "screenshot.png",
     "ocr": {
-        "model": "PaddleOCR",
+        "model": "智谱AI",
         "ali-ocr": {
-            "api_key": ""
+            "api_key": "sk-9844c4fbf71f4b1c9fdf7703fc1eedb9"
         },
         "paddle-ocr": {
             "lang": "ch",
             "model": "PP-OCRv4"
         },
         "sili-ocr": {
-            "api_key": ""
+            "api_key": "sk-tknzgnrclaqlxzmmqcapmxxiyaquouhnhupbpucrbxqlkrgi"
         },
         "zhipu-ocr": {
-            "api_key": ""
+            "api_key": "92335fc472bc46eb969699585072aa14.twa7Pvl5L5aGzm1q"
         }
     },
     "ocr_auto": true,
