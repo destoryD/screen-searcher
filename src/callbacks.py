@@ -119,9 +119,12 @@ def capture_interactive_screenshot():
         dpg.configure_viewport("Searcher",x_pos=-10000,y_pos=-10000)
     screenshot_tool = ScreenShot()  # Instantiate the ScreenShot class
     img = screenshot_tool.img # Capture the image
-    img.save(config.get("screenshot_filename","screenshot.png"))
+    if img:
+        img.save(config.get("screenshot_filename","screenshot.png"))
+        log_message("截图完成")
+    else:
+        log_message("截图未完成")
     dpg.set_viewport_pos(pos)
-    log_message("截图完成")
     if config.get("ocr_auto",False):
         ocr_recognize()
         if config.get("search_auto",False):

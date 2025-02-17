@@ -6,11 +6,11 @@
         "like": {
             "api_model": "deepseek-v3",
             "api_url": "https://api.datam.site/search",
-            "api_token": "test123",
+            "api_token": "",
             "api_search": false
         }
     },
-    "hide_on_capture": false,
+    "hide_on_capture": true,
     "always_on_top": false,
     "hotkey_capture": "win+alt+q",
     "hotkey_search": "win+alt+s",
@@ -31,7 +31,7 @@
             "api_key": ""
         }
     },
-    "ocr_auto": true,
+    "ocr_auto": false,
     "search_auto": false,
     "auto_copy": true,
     "auto_complete": true

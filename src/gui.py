@@ -1,7 +1,7 @@
 import dearpygui.dearpygui as dpg
 from config import config
 import callbacks as cbs
-
+import utils
 def create_software_settings_gui():
     with dpg.collapsing_header(label="软件设置",default_open=True):
         with dpg.group(label="软件设置",horizontal=False):
@@ -53,7 +53,9 @@ def create_search_gui():
                                                     width=400,
                                                     tag="search/like/api_token")
             
-            dpg.add_button(label="还没有Token? 点此即可申请Token",callback=lambda: cbs.openlink("https://www.datam.site/doc/apply_token"))
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="LIKE知识库官网",callback=lambda: cbs.openlink("https://www.datam.site/"))
+                dpg.add_button(label="还没有Token? 点此即可申请Token，首次注册免费享500次查询",callback=lambda: cbs.openlink("https://www.datam.site/doc/apply_token"))
 
             dpg.add_combo(label="模型选择",default_value=config.get("search/like/api_model","deepseek-v3"),
                         items=["deepseek-v3","deepseek-r1","gpt-4o","o3-mini","gemini-2.0-pro-exp","基础推理模型","免费模型(充值用户使用)"],
@@ -119,7 +121,9 @@ def create_log_gui():
 def create_info_gui():
     with dpg.collapsing_header(label="关于本软件",default_open=False):
         with dpg.group(horizontal=False):
-            dpg.add_text("版本：1.0.0")
-            dpg.add_text("作者：Liang")
-            dpg.add_text("Github：https://github.com/llllyy/ocr-search")
+            dpg.add_text("当前版本：1.0.0")
+            #dpg.add_text("最新版本：{}".format(utils.get_newest_version()))
+            dpg.add_text("Github：https://github.com/destoryD/screen-searcher")
             dpg.add_text("本软件仅供学习交流使用，请勿用于商业用途。")
+        with dpg.group(horizontal=True):
+            dpg.add_button(label="项目主页",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher"))

@@ -24,3 +24,10 @@ def log_message(message, log_output_tag="log_output", max_length=10):
 
 def copy_to_clipboard(message):
     pyperclip.copy(message)
+
+def get_newest_version():
+    '''
+        等待实现
+        获取最新版本号
+    '''
+    return "1.0.0"
