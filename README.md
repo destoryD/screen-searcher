@@ -17,15 +17,15 @@
 ## 🛠️ 安装指南
 
 ```bash
-# 克隆仓库
-git clone https://github.com/yourusername/screen-searcher.git
+# 克隆仓库/直接通过页面下载
+git clone https://github.com/destoryD/screen-searcher.git
 cd screen-searcher
 
 # 安装依赖
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
-# 安装 paddleocr 依赖
-pip install paddlepaddle paddle-ocr
+# 安装 paddleocr 依赖(可选，不安装则无法使用PaddleOCR)
+pip3 install paddlepaddle paddle-ocr
 
 # 运行程序
 python src/main.py
