@@ -22,6 +22,7 @@
 
 ## 🛠️ 安装指南
 
+** 需要Python 3.6及以上版本，建议使用Python 3.9或3.10**
 ```bash
 # 克隆仓库/直接通过页面下载
 git clone https://github.com/destoryD/screen-searcher.git
