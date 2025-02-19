@@ -3,20 +3,12 @@ import json
 import os
 
 CONFIG_FILE = "config.json"  # 配置文件名
-DEFAULT_CONFIG = {
-    "api_url": "https://api.datam.site/search",
-    "api_token": "",
-    "screenshot_filename": "screenshot.png",
-    "hide_on_capture": False,
-    "log_max_length": 2000,
-    "always_on_top": False,
-    'hotkey_capture': 'ctrl+q',
-    'hotkey_search': 'ctrl+w'
-}
+DEFAULT_CONFIG = "resources/config.json"
 
 class Config:
-    def __init__(self, config_file=CONFIG_FILE):
+    def __init__(self, config_file=CONFIG_FILE,default_config=DEFAULT_CONFIG):
         self.config_file = config_file
+        self.default_config = default_config
         self._config_data = {}
         self.load_config()
 
@@ -29,10 +21,14 @@ class Config:
             except (json.JSONDecodeError, IOError) as e:
                 print(f"Error loading config from {self.config_file}: {e}")
                 print("Using default config.")
-                self._config_data = DEFAULT_CONFIG
+                if os.path.exists(self.default_config):
+                    with open(self.default_config, "r", encoding="utf-8") as DEFAULT_CONFIG:
+                        self._config_data = json.load(DEFAULT_CONFIG)
         else:
             print(f"Config file {self.config_file} not found. Creating with default values.")
-            self._config_data = DEFAULT_CONFIG
+            if os.path.exists(self.default_config):
+                with open(self.default_config, "r", encoding="utf-8") as DEFAULT_CONFIG:
+                    self._config_data = json.load(DEFAULT_CONFIG)
             self.save_config()
 
     def save_config(self):

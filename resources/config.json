@@ -1,0 +1,38 @@
+{
+    "search": {
+        "api_url": "https://api.datam.site/search",
+        "api_token": "",
+        "query_type": "单选题",
+        "like": {
+            "api_model": "deepseek-v3",
+            "api_url": "https://api.datam.site/search",
+            "api_token": "",
+            "api_search": false
+        }
+    },
+    "hide_on_capture": true,
+    "always_on_top": false,
+    "hotkey_capture": "win+alt+q",
+    "hotkey_search": "win+alt+s",
+    "screenshot_filename": "screenshot.png",
+    "ocr": {
+        "model": "智谱AI",
+        "ali-ocr": {
+            "api_key": ""
+        },
+        "paddle-ocr": {
+            "lang": "ch",
+            "model": "PP-OCRv4"
+        },
+        "sili-ocr": {
+            "api_key": ""
+        },
+        "zhipu-ocr": {
+            "api_key": ""
+        }
+    },
+    "ocr_auto": false,
+    "search_auto": false,
+    "auto_copy": true,
+    "auto_complete": true
+}
