@@ -14,6 +14,12 @@
 - ~~📚 **搜索历史** - 自动保存最近20条搜索记录~~
 - 🌐 **API集成** - 内置LIKE知识库查询功能
 
+## 免安装包下载
+[下载地址](https://github.com/destoryD/screen-searcher/releases)
+
+**使用方法**
+- 下载后解压，运行 `main.exe` 即可
+
 ## 🛠️ 安装指南
 
 ```bash
