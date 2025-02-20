@@ -40,7 +40,7 @@ def create_software_settings_gui():
 def create_search_gui():
     with dpg.collapsing_header(label="答题API设置",default_open=False):
         dpg.add_text("答题API设置")
-        dpg.add_combo(label="题库选择",default_value=config.get("search/tiku","LIKE知识库"),items=["LIKE知识库"])
+        dpg.add_combo(label="题库选择",default_value=config.get("search/tiku","LIKE知识库"),items=["LIKE知识库"],callback= lambda s: cbs.set_api_model(dpg.get_value(s)))
         dpg.add_spacer(height=3)
         with dpg.tree_node(label="LIKE知识库"):
             dpg.add_input_text(label="API地址",

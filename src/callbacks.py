@@ -5,7 +5,7 @@ import os
 import pyperclip
 from screenshot import ScreenShot
 from ocr_models import Qwen_MODEL,PaddleOCR_MODEL,Sili_MODEL,Zhipu_MODEL
-from api import search
+from api_models import API_Model_Like
 import webbrowser
 import global_vars
 def search_question_wrapper():
@@ -21,7 +21,8 @@ def search_question_wrapper():
         query = type_params.get(query_type,'') + query
     log_message("题目类型为：{} 开始请求API".format(query_type))
 
-    result = search(query)
+    result = global_vars.api_model.search(query)
+
     if result:
        dpg.set_value("search_result_tag", "答案: "+ result)
 
@@ -106,6 +107,12 @@ def set_ocr_model(value):
         global_vars.ocr_model = Zhipu_MODEL(config.get("ocr/zhipu-ocr/api_key"))
     log_message(f"OCR模型已设置为 {value}")
 
+def set_api_model(value):
+    """设置API模型"""
+    config.set("search/tiku", value)
+    if config.get("search/tiku") == "LIKE知识库":
+        global_vars.api_model = API_Model_Like(auto_reload=True)
+    log_message(f"查题API已设置为 {value}")
 def capture_interactive_screenshot():
     """
     Captures an interactive screenshot using the ScreenShot class and returns the captured image.

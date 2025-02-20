@@ -30,6 +30,7 @@ if __name__ == '__main__':
 
     init_settings()
     cbs.set_ocr_model(config.get("ocr/model"))
+    cbs.set_api_model(config.get("search/tiku"))
     hotkeys.handle_hotkey()
     dpg.set_primary_window("MainWindow", True)
     dpg.setup_dearpygui()

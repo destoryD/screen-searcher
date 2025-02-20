@@ -1,14 +1,12 @@
 {
     "search": {
-        "api_url": "https://api.datam.site/search",
-        "api_token": "",
-        "query_type": "单选题",
         "like": {
             "api_model": "deepseek-v3",
             "api_url": "https://api.datam.site/search",
             "api_token": "",
             "api_search": false
-        }
+        },
+        "tiku": "LIKE知识库"
     },
     "hide_on_capture": true,
     "always_on_top": false,
