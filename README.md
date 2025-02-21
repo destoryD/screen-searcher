@@ -1,64 +1,94 @@
-# 🚀 Screen-Searcher - OCR屏幕搜索工具
+<!-- <p align="center">
+  <a href="https://github.com/destoryD/screen-searcher">
+    <img width="200" src="./assets/icon.png" alt="Screen-Searcher">
+  </a>
+</p> -->
 
-![演示截图](./index.png)
+<h1 align="center">🚀 Screen-Searcher - OCR屏幕搜索工具</h1>
 
-📌 一款基于OCR技术的桌面应用程序，可通过截图快速搜索屏幕上的任意题目。
+<p align="center">
+  <a href="https://github.com/destoryD/screen-searcher/releases/latest">
+    <img src="https://img.shields.io/github/v/release/destoryD/screen-searcher?style=flat-square" alt="最新版本">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/github/license/destoryD/screen-searcher?style=flat-square" alt="开源协议">
+  </a>
+  <a href="https://github.com/destoryD/screen-searcher/releases">
+    <img src="https://img.shields.io/github/downloads/destoryD/screen-searcher/total?style=flat-square" alt="下载量">
+  </a>
+  <a href="https://star-history.com/#destoryD/screen-searcher">
+    <img src="https://img.shields.io/github/stars/destoryD/screen-searcher?style=flat-square" alt="星标数">
+  </a>
+</p>
+
+<div align="center">
+  <h3>
+    <a href="#功能特性">
+      功能特性
+    </a>
+    <span> • </span>
+    <a href="#安装指南">
+      安装指南
+    </a>
+    <span> • </span>
+    <a href="docs/quickstart.md">
+      快速开始
+    </a>
+    <span> • </span>
+    <a href="#参与贡献">
+      贡献指南
+    </a>
+  </h3>
+</div>
+
+
+
+
+<p align="center">
+  <img src="./index.png" alt="演示截图" style="width: 80%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+</p>
 
 ## ✨ 功能特性
 
-- 📷 **一键截图** - 使用 `自定义` 快捷键捕获屏幕区域
-- 🔍 **即时OCR识别** - 通过各类OCR引擎提取文字内容
-- 🖥️ **图形界面** - 基于Tkinter开发的跨平台界面
-- ⚡ **快捷键支持** - 可在 `UI界面` 中自定义快捷键
-- 🈶 **多语言支持** - 支持100+种语言的OCR识别
-- ~~📚 **搜索历史** - 自动保存最近20条搜索记录~~
-- 🌐 **API集成** - 内置LIKE知识库查询功能
+<div align="center">
 
-## 免安装包下载
-[下载地址](https://github.com/destoryD/screen-searcher/releases)
+| 🎯 核心功能          | 🌈 特色亮点               |
+|----------------------|--------------------------|
+| 📷 一键截图搜索       | 🖥️ 跨平台图形界面         |
+| 🔍 多引擎OCR识别      | ⚡ 可自定义快捷键         |
+| 🌐 100+语言支持       | 📚 智能搜索建议           |
+| 🚀 知识库集成         | 🧩 模块化插件系统         |
 
-**使用方法**
-- 下载后解压，运行 `main.exe` 即可
+</div>
 
 ## 🛠️ 安装指南
 
-**需要Python 3.6及以上版本，建议使用Python 3.9或3.10**
+### 免安装版本
+[<img src="https://img.shields.io/badge/下载-Windows%20绿色版-blue?style=for-the-badge&logo=windows" height="40">](https://github.com/destoryD/screen-searcher/releases)
+
+### 开发者安装
 ```bash
-# 克隆仓库/直接通过页面下载
+# 克隆仓库
 git clone https://github.com/destoryD/screen-searcher.git
 cd screen-searcher
 
 # 安装依赖
 pip3 install -r requirements.txt
 
-# 安装 paddleocr 依赖(可选，不安装则无法使用PaddleOCR)
+# 可选安装PaddleOCR
 pip3 install paddlepaddle paddle-ocr
 
-# 运行程序
+# 启动程序
 python src/main.py
 ```
 
-## 🚦 快速开始
+## ❤️ CONTRIBUTORS
 
-1. 启动应用程序：
-```bash
-python src/main.py
-```
+![Alt](https://repobeats.axiom.co/api/embed/e6e7c2af298f30f9d577e94c3ec69cbad20964a1.svg "Repobeats analytics image")
 
-2. 按下 `win+shift+q` 截取屏幕区域
-3. 识别文字将自动填入搜索框
-4. 选择操作：搜索
-
-PaddleOCR
-> 💡 中文用户提示：在OCR语言设置中添加 `ch` 可获得更好的中文识别效果
-
-## 🤝 参与贡献
-
-1. Fork 本项目
-2. 新建功能分支 (`git checkout -b feature/新功能`)
-3. 提交修改 (`git commit -m '添加了新功能'`)
-4. 推送分支 (`git push origin feature/新功能`)
-5. 提交Pull Request
+<a href="https://github.com/destoryD/screen-searcher/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=destoryD/screen-searcher" />
+</a>
 
 ## 📄 开源协议
 
