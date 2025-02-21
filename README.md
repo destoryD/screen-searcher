@@ -4,7 +4,10 @@
   </a>
 </p> -->
 
-<h1 align="center">🚀 Screen-Searcher - OCR屏幕搜索工具</h1>
+<h1 align="center" style="">
+🚀 Screen-Searcher - OCR屏幕搜索工具<br>
+<span style="font-size: 0.8em;">一款基于OCR技术的桌面应用程序，可通过截图快速搜索屏幕上的任意题目。</span>
+</h1>
 
 <p align="center">
   <a href="https://github.com/destoryD/screen-searcher/releases/latest">
@@ -23,11 +26,11 @@
 
 <div align="center">
   <h3>
-    <a href="#功能特性">
+    <a href="#-功能特性">
       功能特性
     </a>
     <span> • </span>
-    <a href="#安装指南">
+    <a href="#-安装指南">
       安装指南
     </a>
     <span> • </span>
@@ -35,7 +38,7 @@
       快速开始
     </a>
     <span> • </span>
-    <a href="#参与贡献">
+    <a href="#-参与贡献">
       贡献指南
     </a>
   </h3>
