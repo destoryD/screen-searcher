@@ -4,7 +4,7 @@
   </a>
 </p> -->
 
-<h1 align="center" style="">
+<h1 align="center">
 🚀 Screen-Searcher - OCR屏幕搜索工具<br>
 <span style="font-size: 0.8em;">一款基于OCR技术的桌面应用程序，可通过截图快速搜索屏幕上的任意题目。</span>
 </h1>
