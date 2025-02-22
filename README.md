@@ -93,6 +93,16 @@ python src/main.py
   <img src="https://contrib.rocks/image?repo=destoryD/screen-searcher" />
 </a>
 
+## 反馈&交流
+
+
+<div align="center">
+
+[<img src="https://img.shields.io/badge/QQ群-1035350707-7289da?style=for-the-badge&logo=tencent-qq">](https://qm.qq.com/q/kJ7lKBhtkc)
+
+<img src=qrcode.jpg width=300px />
+</div>
+
 ## 📄 开源协议
 
 本项目采用 MIT 许可证，完整内容请查看 `LICENSE` 文件。

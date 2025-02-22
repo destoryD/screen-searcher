@@ -18,7 +18,7 @@ if __name__ == '__main__':
             dpg.add_font_range(0x1, 0x400)
             dpg.bind_font(font)
 
-    dpg.create_viewport(title='Searcher', width=700, height=800, min_width=400, min_height=300)
+    dpg.create_viewport(title='Searcher', width=700, height=800, min_width=400, min_height=300,small_icon="logo.ico", large_icon="logo.ico")
 
     with dpg.window(tag="MainWindow"):
         gui.create_software_settings_gui()

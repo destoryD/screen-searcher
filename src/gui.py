@@ -43,6 +43,10 @@ def create_search_gui():
         dpg.add_combo(label="题库选择",default_value=config.get("search/tiku","LIKE知识库"),items=["LIKE知识库"],callback= lambda s: cbs.set_api_model(dpg.get_value(s)))
         dpg.add_spacer(height=3)
         with dpg.tree_node(label="LIKE知识库"):
+            with dpg.group(horizontal=True):
+                dpg.add_text("当前API状态：不可用",tag="search/like/api_status")
+                dpg.add_text("API余额：0 次",tag="search/like/api_balance")
+                dpg.add_button(label="刷新",callback=lambda: cbs.refresh_like_api())
             dpg.add_input_text(label="API地址",
                                                 default_value=config.get("search/like/api_url"),
                                                 width=400,
@@ -52,7 +56,6 @@ def create_search_gui():
                                                     default_value=config.get("search/like/api_token"),
                                                     width=400,
                                                     tag="search/like/api_token")
-            
             with dpg.group(horizontal=True):
                 dpg.add_button(label="LIKE知识库官网",callback=lambda: cbs.openlink("https://www.datam.site/"))
                 dpg.add_button(label="还没有Token? 点此即可申请Token，首次注册免费享500次查询",callback=lambda: cbs.openlink("https://www.datam.site/doc/apply_token"))
@@ -119,7 +122,7 @@ def create_log_gui():
                 dpg.add_text("", tag="log_output", wrap=500)
 
 def create_info_gui():
-    with dpg.collapsing_header(label="关于本软件",default_open=False):
+    with dpg.collapsing_header(label="关于本软件",default_open=True):
         with dpg.group(horizontal=False):
             dpg.add_text("当前版本：1.0.0")
             #dpg.add_text("最新版本：{}".format(utils.get_newest_version()))
@@ -127,3 +130,6 @@ def create_info_gui():
             dpg.add_text("本软件仅供学习交流使用，请勿用于商业用途。")
         with dpg.group(horizontal=True):
             dpg.add_button(label="项目主页",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher"))
+            dpg.add_button(label="最新版本",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/releases"))
+            dpg.add_button(label="问题反馈",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/issues"))
+            dpg.add_button(label="加入交流QQ群",callback=lambda: cbs.openlink("https://qm.qq.com/q/kJ7lKBhtkc"))

@@ -3,6 +3,7 @@ from utils import log_message,copy_to_clipboard
 from config import config 
 import json
 from typing import Dict
+import dearpygui.dearpygui as dpg
 
 class API_Model(object):
     def __init__(self,name="api_model"):
@@ -21,24 +22,46 @@ class API_Model_Like(API_Model):
     def __init__(self,auto_reload=False):
         self.name = "LIKE知识库"
         super().__init__(self.name)
-        self.api_url = config.get("search/like/api_url") 
-        self.api_token = config.get("search/like/api_token")
-        self.api_model = config.get("search/like/api_model","")
-        self.enable_search = config.get("search/like/api_search",False)
         self.auto_reload = auto_reload
-        self.model_params = {"免费模型(充值用户使用)": "free", "基础推理模型": "basic"}
-        if self.api_model in self.model_params:
-            self.api_model = self.model_params[self.api_model]
         self.headers = {'Content-Type': 'application/json'}
+        self._init_params_()
     def _init_params_(self):
         self.api_url = config.get("search/like/api_url")
         self.api_token = config.get("search/like/api_token")
         self.api_model = config.get("search/like/api_model","")
         self.enable_search = config.get("search/like/api_search",False)
         self.model_params = {"免费模型(充值用户使用)": "free", "基础推理模型": "basic"}
+        self.available = True
+        self.balance = 0
         if self.api_model in self.model_params:
             self.api_model = self.model_params[self.api_model]
+        self.balance = self.get_api_balance()
+        if self.balance <=0:
+            self.available = False
+        else:
+            self.available = True
+        self.vis_api_balance(update=False)
         return
+    def get_api_balance(self,api_token=None):
+        balance_api = "https://api.datam.site/balance"
+        json_params = {
+            "token": api_token if api_token else self.api_token
+        }
+        req = requests.post(balance_api, headers=self.headers,json=json_params)
+        if req.status_code == 200:
+            data = req.json()
+            balance = data.get("data",{}).get("balance",0)
+            log_message("查询余额成功，余额为：{}".format(balance))
+            return balance
+        else:
+            log_message(f"Error: {req.status_code} - {req.text}")
+            return 0
+    def vis_api_balance(self,update=True):
+        if update:
+            self._init_params_()
+        dpg.set_value("search/like/api_balance","API余额：{} 次".format(str(self.balance)))
+        dpg.set_value("search/like/api_status","当前API状态：{}".format("可用" if self.available else "不可用"))
+        return 
     def _reload_(self):
         self._init_params_()
         return

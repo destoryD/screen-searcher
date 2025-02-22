@@ -113,6 +113,15 @@ def set_api_model(value):
     if config.get("search/tiku") == "LIKE知识库":
         global_vars.api_model = API_Model_Like(auto_reload=True)
     log_message(f"查题API已设置为 {value}")
+
+def refresh_like_api():
+    """刷新知识库"""
+    if isinstance(global_vars.api_model,API_Model_Like):
+        global_vars.api_model.vis_api_balance()
+    else:
+        tmp_model = API_Model_Like()
+        tmp_model.vis_api_balance()
+        del tmp_model
 def capture_interactive_screenshot():
     """
     Captures an interactive screenshot using the ScreenShot class and returns the captured image.

@@ -6,7 +6,8 @@
             "api_token": "",
             "api_search": false
         },
-        "tiku": "LIKE知识库"
+        "tiku": "LIKE知识库",
+        "query_type": "单选题"
     },
     "hide_on_capture": true,
     "always_on_top": false,
