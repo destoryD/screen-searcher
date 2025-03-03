@@ -5,7 +5,7 @@ import os
 import pyperclip
 from screenshot import ScreenShot
 from ocr_models import Qwen_MODEL,PaddleOCR_MODEL,Sili_MODEL,Zhipu_MODEL
-from api_models import API_Model_Like
+from api_models import API_Model_Like,API_Model_OpenAI
 import webbrowser
 import global_vars
 def search_question_wrapper():
@@ -77,6 +77,7 @@ def set_query_model(value):
     """设置查询模型"""
     config.set("search/like/api_model", value)
     log_message(f"查询模型已设置为 {value}")
+
 def ocr_recognize():
     log_message("调用OCR流程-使用模型{}".format(config.get("ocr/model")))
     result = global_vars.ocr_model.recognize()
@@ -84,6 +85,17 @@ def ocr_recognize():
     dpg.set_value("recognition_context",result)
     log_message("OCR识别完毕")
     return result
+
+def save_openai_api_config():
+    """保存OpenAI API配置到文件"""
+    config.set("search/openai/api_url", dpg.get_value("search/openai/api_url"))
+    config.set("search/openai/api_key", dpg.get_value("search/openai/api_key"))
+    config.set("search/openai/model", dpg.get_value("search/openai/model"))
+    config.set("search/openai/models_list", dpg.get_value("search/openai/models_list"))
+    config.set("search/openai/temperature", dpg.get_value("search/openai/temperature"))
+    config.set("search/openai/max_tokens", dpg.get_value("search/openai/max_tokens"))
+    log_message("OpenAI API 配置已保存")
+
 def save_ocr_config():
     """保存OCR配置到文件"""
     config.set("ocr/ali-ocr/api_key", dpg.get_value("ocr/ali-ocr/api_key"))
@@ -112,7 +124,23 @@ def set_api_model(value):
     config.set("search/tiku", value)
     if config.get("search/tiku") == "LIKE知识库":
         global_vars.api_model = API_Model_Like(auto_reload=True)
+    elif config.get("search/tiku") == "OpenAI兼容API":
+        global_vars.api_model = API_Model_OpenAI(auto_reload=True)
     log_message(f"查题API已设置为 {value}")
+
+def set_openai_query_model(value):
+    """设置OpenAI查询模型"""
+    config.set("search/openai/model", value)
+    log_message(f"OpenAI查询模型已设置为 {value}")
+
+def refresh_openai_api():
+    """刷新OpenAI"""
+    if isinstance(global_vars.api_model,API_Model_OpenAI):
+        global_vars.api_model.vis_api_status()
+    else:
+        tmp_model = API_Model_OpenAI()
+        tmp_model.vis_api_status()
+        del tmp_model
 
 def refresh_like_api():
     """刷新知识库"""
@@ -122,13 +150,13 @@ def refresh_like_api():
         tmp_model = API_Model_Like()
         tmp_model.vis_api_balance()
         del tmp_model
+
 def capture_interactive_screenshot():
     """
     Captures an interactive screenshot using the ScreenShot class and returns the captured image.
     Returns:
         PIL.Image.Image or None: The captured image if successful, None otherwise.
     """
-    import dearpygui.dearpygui as dpg
     pos = dpg.get_viewport_pos()
     #print(dpg.get_viewport_configuration('Searcher'))
     if config.get("hide_on_capture",False):

@@ -40,7 +40,7 @@ def create_software_settings_gui():
 def create_search_gui():
     with dpg.collapsing_header(label="答题API设置",default_open=False):
         dpg.add_text("答题API设置")
-        dpg.add_combo(label="题库选择",default_value=config.get("search/tiku","LIKE知识库"),items=["LIKE知识库"],callback= lambda s: cbs.set_api_model(dpg.get_value(s)))
+        dpg.add_combo(label="题库选择",default_value=config.get("search/tiku","LIKE知识库"),items=["LIKE知识库","OpenAI兼容API"],callback= lambda s: cbs.set_api_model(dpg.get_value(s)))
         dpg.add_spacer(height=3)
         with dpg.tree_node(label="LIKE知识库"):
             with dpg.group(horizontal=True):
@@ -68,6 +68,37 @@ def create_search_gui():
             with dpg.group(horizontal=True):
                 dpg.add_button(label="保存API配置", callback=lambda: cbs.save_api_config())
                 dpg.add_button(label="复制Token", callback=lambda: cbs.copy_token())
+        with dpg.tree_node(label="OpenAI兼容API"):
+            with dpg.group(horizontal=True):
+                dpg.add_text("当前API状态：不可用",tag="search/openai/api_status")
+                dpg.add_button(label="刷新(自动保存配置)",callback=lambda: cbs.refresh_openai_api())
+            dpg.add_input_text(label="API地址",
+                                default_value=config.get("search/openai/api_url", "https://api.openai.com/v1/chat/completions"),
+                                width=400,
+                                tag="search/openai/api_url")
+            dpg.add_text("注意：这里的API只需填写base地址，不要填写/chat/completions等路径，否则可能导致API调用失败。")
+            dpg.add_input_text(label="API密钥",
+                                password=True,
+                                default_value=config.get("search/openai/api_key", ""),
+                                width=400,
+                                tag="search/openai/api_key")
+            dpg.add_input_text(label="模型名称",
+                        default_value=config.get("search/openai/model", "gpt-4o-mini"),
+                        callback = lambda s: cbs.set_openai_query_model(dpg.get_value(s)),
+                        tag="search/openai/model")
+            dpg.add_slider_float(label="温度",
+                                default_value=config.get("search/openai/temperature", 0.7),
+                                min_value=0.0,
+                                max_value=1.5,
+                                tag="search/openai/temperature")
+            dpg.add_slider_int(label="最大Token数",
+                            default_value=config.get("search/openai/max_tokens", 4096),
+                            min_value=1024,
+                            max_value=8192,
+                            tag="search/openai/max_tokens")
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="保存API配置", callback=lambda: cbs.save_openai_api_config())
+                dpg.add_button(label="点此查看兼容平台/模型列表",callback=lambda: cbs.openlink("https://platform.openai.com/"))
         dpg.add_spacer(height=6)
         dpg.add_separator()
 
@@ -101,7 +132,6 @@ def create_func_gui():
     with dpg.collapsing_header(label="功能页面",default_open=True):
         with dpg.group(horizontal=False,label="functions"):
             dpg.add_text("功能界面")
-            #dpg.add_image("screenshot.png")
             dpg.add_combo(label="当前题目类型",tag="search/query_type",items=["单选题","多选题","判断题","填空题","其他类型题目"],
                           default_value=config.get("search/query_type","单选题"),callback=lambda s: cbs.set_query_type(dpg.get_value(s)))
             dpg.add_input_text(label="识别内容",tag="recognition_context",multiline=True)
