@@ -7,7 +7,14 @@
             "api_search": false
         },
         "tiku": "LIKE知识库",
-        "query_type": "单选题"
+        "query_type": "单选题",
+        "openai": {
+            "api_url": "https://open.bigmodel.cn/api/paas/v4/",
+            "api_key": "",
+            "model": "glm-4-flash",
+            "temperature": 0.7,
+            "max_tokens": 4096
+        }
     },
     "hide_on_capture": true,
     "always_on_top": false,
