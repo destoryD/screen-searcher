@@ -151,10 +151,10 @@ def create_log_gui():
                 dpg.add_text("操作日志：")
                 dpg.add_text("", tag="log_output", wrap=500)
 
-def create_info_gui():
+def create_info_gui(ver):
     with dpg.collapsing_header(label="关于本软件",default_open=True):
         with dpg.group(horizontal=False):
-            dpg.add_text("当前版本：1.0.0")
+            dpg.add_text("当前版本：{}".format(ver))
             #dpg.add_text("最新版本：{}".format(utils.get_newest_version()))
             dpg.add_text("Github：https://github.com/destoryD/screen-searcher")
             dpg.add_text("本软件仅供学习交流使用，请勿用于商业用途。")

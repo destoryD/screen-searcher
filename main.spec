@@ -23,7 +23,7 @@ exe = EXE(
     a.datas,
     [],
     #exclude_binaries=True,
-    name='main',
+    name='screen-searcher',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -36,6 +36,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='resources\logo.ico'
 )
 # coll = COLLECT(
 #     exe,
