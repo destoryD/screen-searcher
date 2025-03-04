@@ -3,21 +3,22 @@ changelog:
     labels:
       - ignore-for-release
   categories:
-    - title: '  Breaking Changes'
+    - title: '💥 重大变更 (Breaking Changes)'
       labels:
         - 'breaking'
-    - title:   Features
+    - title: '✨ 新功能 (Features)'
       labels:
         - 'enhancement'
-    - title: '  Bug Fixes'
+    - title: '🐛 问题修复 (Bug Fixes)'
       labels:
+        - '优化'
         - 'bug'
-    - title: '  Deprecated'
+    - title: '⚠️ 弃用功能 (Deprecated)'
       labels:
         - 'deprecation'
-    - title:   Dependencies
+    - title: '📦 依赖更新 (Dependencies)'
       labels:
         - dependencies
-    - title: Other Changes
+    - title: '🔄 其他变更 (Other Changes)'
       labels:
         - "*"
