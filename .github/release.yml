@@ -11,7 +11,6 @@ changelog:
         - 'enhancement'
     - title: '🐛 问题修复 (Bug Fixes)'
       labels:
-        - '优化'
         - 'bug'
     - title: '⚠️ 弃用功能 (Deprecated)'
       labels:

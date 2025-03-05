@@ -100,7 +100,7 @@ class API_Model_Like(API_Model):
                 result = ",".join(context["data"]["choose"])
                 return result
             elif query_type == 2:
-                return context["data"]["fill"]
+                return ",".join(context["data"]["fills"])
             elif query_type == 3:
                 return context["data"]["judge"]
         return error_msg

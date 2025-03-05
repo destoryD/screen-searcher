@@ -1,0 +1,65 @@
+name: 构建与发布
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送带有 v 前缀的标签时触发，例如 v1.0.1
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+      
+    - name: 设置 Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+        
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+        
+    - name: 提取版本号
+      id: get_version
+      shell: bash
+      run: |
+        VERSION=$(cat VERSION)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        
+    - name: 验证版本号一致性
+      shell: bash
+      run: |
+        if [ "$VERSION" != "$TAG_VERSION" ]; then
+          echo "错误: 标签版本 ($TAG_VERSION) 与 VERSION 文件中的版本 ($VERSION) 不匹配"
+          exit 1
+        fi
+        
+    - name: 运行发布脚本
+      run: python release.py
+      
+    - name: 上传便携版压缩包
+      uses: actions/upload-artifact@v3
+      with:
+        name: portable-package
+        path: releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
+        
+    - name: 创建 GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Screen Searcher v${{ env.VERSION }}
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+        files: |
+          releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERSION_UNDERSCORE: ${{ env.VERSION_UNDERSCORE }}
