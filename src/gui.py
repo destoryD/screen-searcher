@@ -30,6 +30,9 @@ def create_software_settings_gui():
                 dpg.add_checkbox(label="搜索时自动添加题目类型",default_value=config.get("auto_complete", True),
                                 callback=lambda s: cbs.set_auto_complete(dpg.get_value(s)),
                                 tag="auto_complete_checkbox")
+                dpg.add_checkbox(label="自动推断题目类型",default_value=config.get("auto_detect_type", False),
+                                callback=lambda s: cbs.set_auto_detect_type(dpg.get_value(s)),
+                                tag="auto_detect_type_checkbox")
             dpg.add_input_text(label="截图快捷键",default_value=config.get("hotkey_capture", "ctrl+q"),tag="hotkey_capture")
             dpg.add_input_text(label="搜索快捷键",default_value=config.get("hotkey_search", "ctrl+w"),tag="hotkey_search")
 

@@ -89,7 +89,7 @@ class API_Model_Like(API_Model):
             return res
         else:
             log_message(f"Error: {req.status_code} - {req.text}")
-    def resolve_context(context:Dict):
+    def resolve_context(self,context:Dict):
         success = context.get("success")
         error_msg = context.get("error")
         query_type = context.get("data").get("type",0)

@@ -17,8 +17,11 @@ def search_question_wrapper():
     type_params = {"单选题":"【单选题】","多选题":"【多选题】","判断题":"【判断题】","填空题":"【填空题】","其他类型题目":"【其他类型题目】"}
     query = dpg.get_value("recognition_context")
     query_type = dpg.get_value("search/query_type")
-    if config.get("auto_complete",False):
-        query = type_params.get(query_type,'') + query
+    
+    # 如果启用了自动添加题目类型
+    if config.get("auto_complete", False):
+        query = type_params.get(query_type, '') + query
+    
     log_message("题目类型为：{} 开始请求API".format(query_type))
 
     result = global_vars.api_model.search(query)
@@ -82,9 +85,45 @@ def ocr_recognize():
     log_message("调用OCR流程-使用模型{}".format(config.get("ocr/model")))
     result = global_vars.ocr_model.recognize()
     print(result)
-    dpg.set_value("recognition_context",result)
+    dpg.set_value("recognition_context", result)
+    
+    # 添加自动推断题目类型功能
+    if config.get("auto_detect_type", False) and result:
+        question_type = detect_question_type(result)
+        if question_type:
+            dpg.set_value("search/query_type", question_type)
+            log_message(f"自动推断题目类型为: {question_type}")
+    
     log_message("OCR识别完毕")
     return result
+
+def detect_question_type(text):
+    """根据文本内容推断题目类型"""
+    text = text.lower()
+    
+    # 判断题特征
+    if "正确" in text and "错误" in text:
+        return "判断题"
+    if "对" in text and "错" in text:
+        return "判断题"
+    
+    # 单选题特征
+    if any(marker in text for marker in ["a.", "b.", "c.", "d.", "a、", "b、", "c、", "d、"]):
+        # 检查是否有多选提示
+        if "多选" in text or "多项" in text:
+            return "多选题"
+        return "单选题"
+    
+    # 多选题特征
+    if "多选" in text or "多项" in text:
+        return "多选题"
+    
+    # 填空题特征
+    if "填空" in text or "_____" in text or "____" in text or "__" in text:
+        return "填空题"
+    
+    # 如果没有明确特征，返回None，保持原有选择
+    return None
 
 def save_openai_api_config():
     """保存OpenAI API配置到文件"""
@@ -177,3 +216,8 @@ def capture_interactive_screenshot():
 
 def openlink(url):
     webbrowser.open(url)
+
+def set_auto_detect_type(value):
+    """保存自动推断题目类型设置到配置文件"""
+    config.set("auto_detect_type", value)
+    log_message(f"自动推断题目类型已{'启用' if value else '禁用'}")
