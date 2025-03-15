@@ -152,14 +152,18 @@ def create_log_gui():
                 dpg.add_text("", tag="log_output", wrap=500)
 
 def create_info_gui(ver):
+    new_ver = utils.get_newest_version()
     with dpg.collapsing_header(label="关于本软件",default_open=True):
         with dpg.group(horizontal=False):
             dpg.add_text("当前版本：{}".format(ver))
-            #dpg.add_text("最新版本：{}".format(utils.get_newest_version()))
+            dpg.add_text("最新版本：{}".format(new_ver))
             dpg.add_text("Github：https://github.com/destoryD/screen-searcher")
             dpg.add_text("本软件仅供学习交流使用，请勿用于商业用途。")
         with dpg.group(horizontal=True):
             dpg.add_button(label="项目主页",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher"))
-            dpg.add_button(label="最新版本",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/releases"))
+            if new_ver!=ver:
+                dpg.add_button(label="点我下载最新版本",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/releases"))
+            else:
+                dpg.add_button(label="查看当前发布版本",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/releases"))
             dpg.add_button(label="问题反馈",callback=lambda: cbs.openlink("https://github.com/destoryD/screen-searcher/issues"))
             dpg.add_button(label="加入交流QQ群",callback=lambda: cbs.openlink("https://qm.qq.com/q/kJ7lKBhtkc"))

@@ -1,6 +1,7 @@
 # src/utils.py
 import datetime
 import pyperclip
+import requests
 def log_message(message, log_output_tag="log_output", max_length=10):
     """
     更新日志消息到 Dear PyGui 的文本组件。
@@ -30,4 +31,9 @@ def get_newest_version():
         等待实现
         获取最新版本号
     '''
-    return "1.0.0"
+    api_url = "https://www.datam.site/addons/screen_searcher.json"
+    try:
+        data = requests.get(api_url).json()
+        return data["newest_version"]
+    except:
+        return "1.0.0"
