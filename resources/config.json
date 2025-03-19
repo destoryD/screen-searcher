@@ -40,5 +40,6 @@
     "ocr_auto": false,
     "search_auto": false,
     "auto_copy": true,
-    "auto_complete": true
+    "auto_complete": true,
+    "auto_detect_type": true
 }
