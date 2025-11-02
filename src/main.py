@@ -26,7 +26,7 @@ if __name__ == '__main__':
         gui.create_ocr_gui()
         gui.create_func_gui()
         gui.create_log_gui()
-        gui.create_info_gui(ver="1.0.2")
+        gui.create_info_gui(ver="1.0.3")
 
     init_settings()
     cbs.set_ocr_model(config.get("ocr/model"))

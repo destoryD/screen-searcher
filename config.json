@@ -1,10 +1,11 @@
 {
     "search": {
         "like": {
-            "api_model": "deepseek-v3",
-            "api_url": "https://api.datam.site/search",
+            "api_model": "glm-4.5-air",
+            "api_url": "https://app.datam.site/api/v1/query",
             "api_token": "",
-            "api_search": false
+            "api_search": false,
+            "api_vision": true
         },
         "tiku": "LIKE知识库",
         "query_type": "单选题",

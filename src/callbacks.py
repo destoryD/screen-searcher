@@ -1,6 +1,6 @@
 import dearpygui.dearpygui as dpg
 from config import config
-from utils import log_message
+from utils import log_message, show_message_box
 import os
 import pyperclip
 from screenshot import ScreenShot
@@ -10,37 +10,53 @@ import webbrowser
 import global_vars
 def search_question_wrapper():
     """搜索问题的包装函数，处理UI更新"""
-    screenshot_filename = config.get("screenshot_filename")
-    if not os.path.exists(screenshot_filename):
-        dpg.set_value("search_result_tag", "错误：请先截图")
-        return
-    type_params = {"单选题":"【单选题】","多选题":"【多选题】","判断题":"【判断题】","填空题":"【填空题】","其他类型题目":"【其他类型题目】"}
-    query = dpg.get_value("recognition_context")
-    query_type = dpg.get_value("search/query_type")
-    
-    # 如果启用了自动添加题目类型
-    if config.get("auto_complete", False):
-        query = type_params.get(query_type, '') + query
-    
-    log_message("题目类型为：{} 开始请求API".format(query_type))
+    try:
+        screenshot_filename = config.get("screenshot_filename")
+        type_params = {"单选题": "【单选题】", "多选题": "【多选题】", "判断题": "【判断题】", "填空题": "【填空题】", "其他类型题目": "【其他类型题目】"}
+        query = dpg.get_value("recognition_context")
+        if not query:
+            if not os.path.exists(screenshot_filename):
+                dpg.set_value("search_result_tag", "错误：未找到截图文件，请先截图")
+                show_message_box("未找到截图文件，请先截图", "搜索错误", "error")
+                return
+        query_type = dpg.get_value("search/query_type")
+        
+        # 如果启用了自动添加题目类型
+        if config.get("auto_complete", False):
+            query = type_params.get(query_type, '') + query
+        
+        log_message("题目类型为：{} 开始请求API".format(query_type))
 
-    result = global_vars.api_model.search(query)
+        result = global_vars.api_model.search(query)
 
-    if result:
-       dpg.set_value("search_result_tag", "答案: "+ result)
+        if result:
+           dpg.set_value("search_result_tag", "答案: "+ result)
+        else:
+            show_message_box("未找到答案，请检查API配置或稍后重试", "搜索结果", "warning")
+    except Exception as e:
+        show_message_box(f"搜索过程中发生错误: {str(e)}", "搜索错误", "error")
+        log_message(f"搜索失败: {str(e)}")
+        dpg.set_value("search_result_tag", "错误: "+ str(e))
 
 def save_settings():
     """保存设置到配置文件"""
-    config.set("hotkey_capture", dpg.get_value('hotkey_capture'))
-    config.set("hotkey_search", dpg.get_value('hotkey_search'))
-    log_message("设置已保存,重启后生效！")
+    try:
+        config.set("hotkey_capture", dpg.get_value('hotkey_capture'))
+        config.set("hotkey_search", dpg.get_value('hotkey_search'))
+        show_message_box("设置已保存,快捷键将在重启后生效！", "设置保存", "success")
+        log_message("设置已保存,重启后生效！")
+    except Exception as e:
+        show_message_box(f"保存设置时发生错误: {str(e)}", "保存设置错误", "error")
+        log_message(f"保存设置失败: {str(e)}")
 
 def set_auto_copy(value):
     """保存设置到配置文件"""
     config.set("auto_copy", value)
+    
 def set_auto_complete(value):
     """保存设置到配置文件"""
     config.set("auto_complete", value)
+
 def set_ocr_auto(value):
     """保存设置到配置文件"""
     config.set("ocr_auto", value)
@@ -57,6 +73,7 @@ def set_always_on_top(value):
 def set_hide_on_capture(value):
     """设置截图后隐藏窗口"""
     config.set("hide_on_capture", value)
+
 def set_search_online(value):
     """设置在线搜索"""
     config.set("search/like/api_search", value)
@@ -68,9 +85,18 @@ def copy_token():
 
 def save_api_config():
     """保存API配置到文件"""
-    config.set("search/like/api_url", dpg.get_value("search/like/api_url"))
-    config.set("search/like/api_token", dpg.get_value("search/like/api_token"))
-    log_message("API 配置已保存")
+    try:
+        config.set("search/like/api_url", dpg.get_value("search/like/api_url"))
+        config.set("search/like/api_token", dpg.get_value("search/like/api_token"))
+        config.set("search/like/api_model", dpg.get_value("search/like/api_model"))
+        config.set("search/like/api_search", dpg.get_value("search/like/api_search"))
+        config.set("search/like/api_vision", dpg.get_value("search/like/api_vision"))
+        show_message_box("LIKE知识库API配置已保存", "API配置保存", "success")
+        log_message("API 配置已保存")
+    except Exception as e:
+        show_message_box(f"保存LIKE知识库API配置时发生错误: {str(e)}", "保存API配置错误", "error")
+        log_message(f"保存LIKE知识库API配置失败: {str(e)}")
+
 def set_query_type(value):
     """设置查询类型"""
     config.set("search/query_type", value)
@@ -82,20 +108,27 @@ def set_query_model(value):
     log_message(f"查询模型已设置为 {value}")
 
 def ocr_recognize():
-    log_message("调用OCR流程-使用模型{}".format(config.get("ocr/model")))
-    result = global_vars.ocr_model.recognize()
-    print(result)
-    dpg.set_value("recognition_context", result)
-    
-    # 添加自动推断题目类型功能
-    if config.get("auto_detect_type", False) and result:
-        question_type = detect_question_type(result)
-        if question_type:
-            dpg.set_value("search/query_type", question_type)
-            log_message(f"自动推断题目类型为: {question_type}")
-    
-    log_message("OCR识别完毕")
-    return result
+    try:
+        log_message("调用OCR流程-使用模型{}".format(config.get("ocr/model")))
+        result = global_vars.ocr_model.recognize()
+        if result:
+            print(result)
+            dpg.set_value("recognition_context", result)
+            
+            # 添加自动推断题目类型功能
+            if config.get("auto_detect_type", False) and result:
+                question_type = detect_question_type(result)
+                if question_type:
+                    dpg.set_value("search/query_type", question_type)
+                    log_message(f"自动推断题目类型为: {question_type}")
+        else:
+            show_message_box("OCR识别失败或未返回结果", "OCR识别", "warning")
+        log_message("OCR识别完毕")
+        return result
+    except Exception as e:
+        show_message_box(f"OCR识别过程中发生错误: {str(e)}", "OCR识别错误", "error")
+        log_message(f"OCR识别失败: {str(e)}")
+        return None
 
 def detect_question_type(text):
     """根据文本内容推断题目类型"""
@@ -127,23 +160,33 @@ def detect_question_type(text):
 
 def save_openai_api_config():
     """保存OpenAI API配置到文件"""
-    config.set("search/openai/api_url", dpg.get_value("search/openai/api_url"))
-    config.set("search/openai/api_key", dpg.get_value("search/openai/api_key"))
-    config.set("search/openai/model", dpg.get_value("search/openai/model"))
-    config.set("search/openai/models_list", dpg.get_value("search/openai/models_list"))
-    config.set("search/openai/temperature", dpg.get_value("search/openai/temperature"))
-    config.set("search/openai/max_tokens", dpg.get_value("search/openai/max_tokens"))
-    log_message("OpenAI API 配置已保存")
+    try:
+        config.set("search/openai/api_url", dpg.get_value("search/openai/api_url"))
+        config.set("search/openai/api_key", dpg.get_value("search/openai/api_key"))
+        config.set("search/openai/model", dpg.get_value("search/openai/model"))
+        config.set("search/openai/models_list", dpg.get_value("search/openai/models_list"))
+        config.set("search/openai/temperature", dpg.get_value("search/openai/temperature"))
+        config.set("search/openai/max_tokens", dpg.get_value("search/openai/max_tokens"))
+        show_message_box("OpenAI API配置已保存", "API配置保存", "success")
+        log_message("OpenAI API 配置已保存")
+    except Exception as e:
+        show_message_box(f"保存OpenAI API配置时发生错误: {str(e)}", "保存API配置错误", "error")
+        log_message(f"保存OpenAI API配置失败: {str(e)}")
 
 def save_ocr_config():
     """保存OCR配置到文件"""
-    config.set("ocr/ali-ocr/api_key", dpg.get_value("ocr/ali-ocr/api_key"))
-    config.set("ocr/sili-ocr/api_key", dpg.get_value("ocr/sili-ocr/api_key"))
-    config.set("ocr/zhipu-ocr/api_key", dpg.get_value("ocr/zhipu-ocr/api_key"))
-    config.set("ocr/paddle-ocr/model", dpg.get_value("ocr/paddle-ocr/model"))
-    config.set("ocr/paddle-ocr/lang", dpg.get_value("ocr/paddle-ocr/lang"))
-    set_ocr_model(dpg.get_value("ocr/model"))
-    log_message("OCR 配置已保存")
+    try:
+        config.set("ocr/ali-ocr/api_key", dpg.get_value("ocr/ali-ocr/api_key"))
+        config.set("ocr/sili-ocr/api_key", dpg.get_value("ocr/sili-ocr/api_key"))
+        config.set("ocr/zhipu-ocr/api_key", dpg.get_value("ocr/zhipu-ocr/api_key"))
+        config.set("ocr/paddle-ocr/model", dpg.get_value("ocr/paddle-ocr/model"))
+        config.set("ocr/paddle-ocr/lang", dpg.get_value("ocr/paddle-ocr/lang"))
+        set_ocr_model(dpg.get_value("ocr/model"))
+        show_message_box("OCR配置已保存", "OCR配置保存", "success")
+        log_message("OCR 配置已保存")
+    except Exception as e:
+        show_message_box(f"保存OCR配置时发生错误: {str(e)}", "保存OCR配置错误", "error")
+        log_message(f"保存OCR配置失败: {str(e)}")
 
 def set_ocr_model(value):
     """设置OCR模型"""
@@ -221,3 +264,28 @@ def set_auto_detect_type(value):
     """保存自动推断题目类型设置到配置文件"""
     config.set("auto_detect_type", value)
     log_message(f"自动推断题目类型已{'启用' if value else '禁用'}")
+
+def test_message_box():
+    """测试消息弹窗功能"""
+    from utils import show_message_box
+    show_message_box("这是一个测试消息", "测试", "info")
+
+def show_info_message(message, title="提示"):
+    """显示信息类消息弹窗"""
+    from utils import show_message_box
+    show_message_box(message, title, "info")
+
+def show_warning_message(message, title="警告"):
+    """显示警告类消息弹窗"""
+    from utils import show_message_box
+    show_message_box(message, title, "warning")
+
+def show_error_message(message, title="错误"):
+    """显示错误类消息弹窗"""
+    from utils import show_message_box
+    show_message_box(message, title, "error")
+
+def show_success_message(message, title="成功"):
+    """显示成功类消息弹窗"""
+    from utils import show_message_box
+    show_message_box(message, title, "success")
