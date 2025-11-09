@@ -32,6 +32,8 @@ jobs:
         VERSION=$(cat VERSION)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        VERSION_UNDERSCORE=${VERSION//./_}
+        echo "VERSION_UNDERSCORE=$VERSION_UNDERSCORE" >> $GITHUB_ENV
         
     - name: 验证版本号一致性
       shell: bash
@@ -62,4 +64,3 @@ jobs:
           releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        VERSION_UNDERSCORE: ${{ env.VERSION_UNDERSCORE }}
