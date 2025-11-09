@@ -11,7 +11,7 @@ jobs:
     
     steps:
     - name: 检出代码
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: 设置 Python
       uses: actions/setup-python@v4
@@ -45,7 +45,7 @@ jobs:
       run: python release.py
       
     - name: 上传便携版压缩包
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: portable-package
         path: releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
@@ -55,7 +55,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         name: Screen Searcher v${{ env.VERSION }}
-        draft: false
+        draft: true
         prerelease: false
         generate_release_notes: true
         files: |
