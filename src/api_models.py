@@ -30,17 +30,36 @@ class API_Model_Like(API_Model):
     def _init_params_(self):
         self.api_url = config.get("search/like/api_url")
         self.api_token = config.get("search/like/api_token")
+        self.headers['Authorization'] = f'Bearer {self.api_token}'
         self.api_model = config.get("search/like/api_model", "")
+        self.api_models = self.get_api_models()
         self.check_url = "https://app.datam.site/"
         self.enable_search = config.get("search/like/api_search", False)
         self.enable_vision = config.get("search/like/api_vision", True)
-        self.available = True
-        self.balance = 0
-        self.headers['Authorization'] = f'Bearer {self.api_token}'
+        self.available = self.check_api_status()
         self.balance = self.get_api_balance()
-        self.vis_api_balance(update=False)
+        self.refresh_ui_status(update=False)
         return
     
+    def check_api_status(self):
+        try:
+            response = requests.get(self.check_url)
+            return response.status_code == 200
+        except Exception as e:
+            log_message(f"Error: {e}")
+            return False
+
+    def get_api_models(self):
+        models_api = "https://app.datam.site/api/v1/query/models"
+        req = requests.get(models_api, headers=self.headers)
+        if req.status_code == 200:
+            data = req.json()
+            models = data.get("models", [])
+            return models
+        else:
+            log_message(f"Error: {req.status_code} - {req.text}")
+            return []
+
     def get_api_balance(self):
         balance_api = "https://app.datam.site/api/v1/balance"
 
@@ -54,13 +73,14 @@ class API_Model_Like(API_Model):
             log_message(f"Error: {req.status_code} - {req.text}")
             return 0
         
-    def vis_api_balance(self, update=True):
+    def refresh_ui_status(self, update=True):
         if update:
             self._init_params_()
         dpg.set_value("search/like/api_balance", "API余额：{} 次".format(str(self.balance)))
         response = requests.get(self.check_url)
         self.available = response.status_code == 200
         dpg.set_value("search/like/api_status", "当前API状态：{}".format("可用" if self.available else "不可用"))
+        dpg.configure_item("search/like/api_model", items=self.api_models)
         return 
     
     def show_status(self):

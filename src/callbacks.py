@@ -4,10 +4,11 @@ from utils import log_message, show_message_box
 import os
 import pyperclip
 from screenshot import ScreenShot
-from ocr_models import Qwen_MODEL,PaddleOCR_MODEL,Sili_MODEL,Zhipu_MODEL
-from api_models import API_Model_Like,API_Model_OpenAI
+from ocr_models import Qwen_MODEL, PaddleOCR_MODEL, Sili_MODEL, Zhipu_MODEL
+from api_models import API_Model_Like, API_Model_OpenAI
 import webbrowser
 import global_vars
+
 def search_question_wrapper():
     """搜索问题的包装函数，处理UI更新"""
     try:
@@ -91,6 +92,12 @@ def save_api_config():
         config.set("search/like/api_model", dpg.get_value("search/like/api_model"))
         config.set("search/like/api_search", dpg.get_value("search/like/api_search"))
         config.set("search/like/api_vision", dpg.get_value("search/like/api_vision"))
+        
+        # 如果当前API模型是LIKE知识库，刷新API模型参数
+        from api_models import API_Model_Like
+        if isinstance(global_vars.api_model, API_Model_Like):
+            global_vars.api_model._reload_()
+        
         show_message_box("LIKE知识库API配置已保存", "API配置保存", "success")
         log_message("API 配置已保存")
     except Exception as e:
@@ -167,6 +174,12 @@ def save_openai_api_config():
         config.set("search/openai/models_list", dpg.get_value("search/openai/models_list"))
         config.set("search/openai/temperature", dpg.get_value("search/openai/temperature"))
         config.set("search/openai/max_tokens", dpg.get_value("search/openai/max_tokens"))
+        
+        # 如果当前API模型是OpenAI兼容API，刷新API模型参数
+        from api_models import API_Model_OpenAI
+        if isinstance(global_vars.api_model, API_Model_OpenAI):
+            global_vars.api_model._reload_()
+        
         show_message_box("OpenAI API配置已保存", "API配置保存", "success")
         log_message("OpenAI API 配置已保存")
     except Exception as e:

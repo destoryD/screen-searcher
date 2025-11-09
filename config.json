@@ -1,7 +1,7 @@
 {
     "search": {
         "like": {
-            "api_model": "glm-4.5-air",
+            "api_model": "glm-4.5",
             "api_url": "https://app.datam.site/api/v1/query",
             "api_token": "",
             "api_search": false,
