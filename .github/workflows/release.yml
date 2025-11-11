@@ -70,7 +70,7 @@ jobs:
           
           ### 📋 版本信息
           - 版本: v${{ env.VERSION }}
-          - 发布日期: ${{ env.VERSION }}
+          - 发布日期: ${{ github.event.release.published_at || github.run_started_at }}
           
           <!-- GitHub会根据提交和PR标签自动生成发布说明 -->
         files: |
