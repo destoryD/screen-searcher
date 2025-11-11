@@ -63,6 +63,16 @@ jobs:
         draft: true
         prerelease: false
         generate_release_notes: true
+        body: |
+          ## 📦 Screen Searcher v${{ env.VERSION }} 发布说明
+          
+          感谢使用 Screen Searcher！
+          
+          ### 📋 版本信息
+          - 版本: v${{ env.VERSION }}
+          - 发布日期: ${{ env.VERSION }}
+          
+          <!-- GitHub会根据提交和PR标签自动生成发布说明 -->
         files: |
           releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
         token: ${{ secrets.GITHUB_TOKEN }}
