@@ -3,7 +3,7 @@ name: 构建与发布
 on:
   push:
     tags:
-      - 'v*'  # 仅在推送 v 开头的标签时触发
+      - 'v*'  # 仅在推送 v 开头的标签时触发，例如 v1.0.1
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-        cache: 'pip'
+        cache: 'pip' # 确保根目录下有 requirements.txt 用于缓存
         
     - name: 安装依赖
       run: |
@@ -28,42 +28,50 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
-    - name: 从 Tag 提取版本号
-      id: get_version
+    - name: 提取版本与时间信息
+      id: get_info
       shell: bash
       run: |
-        # GITHUB_REF 的格式通常是 "refs/tags/v1.0.1"
-        # 使用 Shell 参数扩展功能移除 "refs/tags/v" 前缀
+        # 1. 从 Tag 提取版本号 (去除 v 前缀)
+        # 例如 refs/tags/v1.0.1 -> 1.0.1
         VERSION=${GITHUB_REF#refs/tags/v}
-        
-        echo "🚀 检测到 Git Tag 版本: $VERSION"
-        
-        # 写入环境变量 VERSION (例如 1.0.1)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
         
-        # 生成下划线版本 (例如 1_0_1)，用于文件名
+        # 2. 生成下划线版本号 (用于文件名)
+        # 1.0.1 -> 1_0_1
         VERSION_UNDERSCORE=${VERSION//./_}
         echo "VERSION_UNDERSCORE=$VERSION_UNDERSCORE" >> $GITHUB_ENV
         
+        # 3. 生成构建时间 (解决原文件时间为空的问题)
+        # 使用 date 命令手动生成，并指定为北京时间 (Asia/Shanghai)
+        BUILD_TIME=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')
+        echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
+        
+        echo "🚀 准备构建版本: $VERSION"
+        echo "🕒 构建时间: $BUILD_TIME"
+        
     - name: 运行发布脚本
+      # 将版本号注入环境变量，供 release.py 读取并注入到 version.py 中
       env:
         BUILD_VERSION: ${{ env.VERSION }}
       run: python release.py
       
-    - name: 上传便携版压缩包
+    - name: 上传便携版压缩包 (Artifact)
       uses: actions/upload-artifact@v4
       with:
+        # Artifact 名称带上版本号，方便区分
         name: portable-package-v${{ env.VERSION }}
-        # 使用通配符 *.zip 增加容错性，防止 Python 生成路径细微差异报错
+        # 使用通配符 * 增加容错性，防止 Python 脚本生成的路径有细微差异导致失败
         path: releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
         if-no-files-found: error
         
     - name: 创建 GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         name: Screen Searcher v${{ env.VERSION }}
-        draft: false
+        draft: false     # 设置为 false 直接发布，或 true 存为草稿
         prerelease: false
         generate_release_notes: true
         body: |
@@ -73,9 +81,11 @@ jobs:
           
           ### 📋 版本信息
           - **版本**: v${{ env.VERSION }}
-          - **构建时间**: ${{ github.run_started_at }}
+          - **构建时间**: ${{ env.BUILD_TIME }} (北京时间)
+          - **Commit**: ${{ github.sha }}
           
           <!-- 下方变更日志由 GitHub 自动生成 -->
         files: |
+          # 使用通配符上传 release.py 生成的 zip 文件
           releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
         token: ${{ secrets.GITHUB_TOKEN }}
