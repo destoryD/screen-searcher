@@ -6,18 +6,54 @@ changelog:
     - title: '💥 重大变更 (Breaking Changes)'
       labels:
         - 'breaking'
+      # GitHub会自动识别包含BREAKING CHANGE的提交
     - title: '✨ 新功能 (Features)'
       labels:
         - 'enhancement'
+        - 'feature'
+        - 'feat'
+      exclude:
+        types:
+          - 'chore'
+      # GitHub也会识别feat:类型的提交
     - title: '🐛 问题修复 (Bug Fixes)'
       labels:
         - 'bug'
+        - 'fix'
+      exclude:
+        types:
+          - 'chore'
+      # GitHub会识别fix:类型的提交
+    - title: '📝 文档更新 (Documentation)'
+      labels:
+        - 'documentation'
+        - 'docs'
     - title: '⚠️ 弃用功能 (Deprecated)'
       labels:
         - 'deprecation'
     - title: '📦 依赖更新 (Dependencies)'
       labels:
-        - dependencies
+        - 'dependencies'
+        - 'dependency'
+    - title: '⚡ 性能改进 (Performance)'
+      labels:
+        - 'performance'
+        - 'perf'
+    - title: '🏗️ 重构 (Refactoring)'
+      labels:
+        - 'refactor'
+    - title: '🧪 测试 (Testing)'
+      labels:
+        - 'test'
+        - 'testing'
     - title: '🔄 其他变更 (Other Changes)'
       labels:
         - "*"
+      exclude:
+        types:
+          - 'chore'
+          - 'docs'
+          - 'test'
+          - 'refactor'
+          - 'style'
+          - 'ci'

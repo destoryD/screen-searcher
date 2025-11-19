@@ -3,7 +3,10 @@ name: 构建与发布
 on:
   push:
     tags:
-      - 'v*'  # 当推送带有 v 前缀的标签时触发，例如 v1.0.1
+      - 'v*'
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -25,42 +28,58 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
-    - name: 提取版本号
-      id: get_version
+    - name: 提取版本与时间信息
+      id: get_info
       shell: bash
       run: |
-        VERSION=$(cat VERSION)
+        # 1. 从 Tag 提取版本号
+        VERSION=${GITHUB_REF#refs/tags/v}
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        
+        # 2. 生成下划线版本号
         VERSION_UNDERSCORE=${VERSION//./_}
         echo "VERSION_UNDERSCORE=$VERSION_UNDERSCORE" >> $GITHUB_ENV
         
-    - name: 验证版本号一致性
-      shell: bash
-      run: |
-        if [ "$VERSION" != "$TAG_VERSION" ]; then
-          echo "错误: 标签版本 ($TAG_VERSION) 与 VERSION 文件中的版本 ($VERSION) 不匹配"
-          exit 1
-        fi
+        # 3. 生成构建时间 (修复时区问题)
+        # 使用 Python 强制计算 UTC+8，避开 Windows Bash 的时区 Bug
+        BUILD_TIME=$(python -c "import datetime; print((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S'))")
+        echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_ENV
+        
+        echo "🚀 准备构建版本: $VERSION"
+        echo "🕒 构建时间: $BUILD_TIME (CN)"
         
     - name: 运行发布脚本
+      env:
+        BUILD_VERSION: ${{ env.VERSION }}
       run: python release.py
       
-    - name: 上传便携版压缩包
+    - name: 上传便携版压缩包 (Artifact)
       uses: actions/upload-artifact@v4
       with:
-        name: portable-package
-        path: releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
+        name: portable-package-v${{ env.VERSION }}
+        path: releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
+        if-no-files-found: error
         
     - name: 创建 GitHub Release
       id: create_release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         name: Screen Searcher v${{ env.VERSION }}
         draft: true
         prerelease: false
         generate_release_notes: true
+        body: |
+          ## 📦 Screen Searcher v${{ env.VERSION }} 发布说明
+          
+          感谢使用 Screen Searcher！
+          
+          ### 📋 版本信息
+          - **版本**: v${{ env.VERSION }}
+          - **构建时间**: ${{ env.BUILD_TIME }} (北京时间)
+          - **Commit**: ${{ github.sha }}
+          
+          <!-- 下方变更日志由 GitHub 自动生成 -->
         files: |
-          releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
