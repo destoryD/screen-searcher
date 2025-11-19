@@ -18,14 +18,10 @@ a = Analysis(
     pathex=[str(src_dir)],
     binaries=[],
     datas=[],
-    # --- 2. 隐式导入检查 ---
-    # 如果你的代码用了 pynput, keyboard, PIL 等库，有时需要手动添加
     hiddenimports=[], 
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    # --- 3. 排除不必要的库 (减小体积) ---
-    # 保留了你原有的列表，并添加了一些常见的无关标准库
     excludes=[
         'PyQt5', 'PyQt6', 'PySide2', 'PySide6', 
         'torch', 'tensorflow', 
