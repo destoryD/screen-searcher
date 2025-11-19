@@ -80,6 +80,37 @@ def check_required_files():
     for file in required_files:
         if not os.path.exists(file):
             raise FileNotFoundError(f"缺少必需文件: {file}")
+        
+def write_version_file(version):
+    """
+    构建前将版本号写入 src/version.py
+    """
+    version_file = Path('src/version.py')
+    content = f'# 由 release.py 自动生成\n__version__ = "{version}"\n'
+    
+    # 备份原文件（如果是本地运行，最好备份一下）
+    if version_file.exists():
+        shutil.copy2(version_file, str(version_file) + ".bak")
+        
+    with open(version_file, 'w', encoding='utf-8') as f:
+        f.write(content)
+    
+    logging.info(f"已注入版本号 {version} 到 {version_file}")
+
+def restore_version_file():
+    """
+    构建后恢复 src/version.py (可选)
+    """
+    version_file = Path('src/version.py')
+    backup_file = Path('src/version.py.bak')
+    
+    if backup_file.exists():
+        shutil.move(backup_file, version_file)
+        logging.info("已恢复原始 version.py")
+    else:
+        # 如果没有备份，为了不污染开发环境，可以重置为 dev
+        with open(version_file, 'w', encoding='utf-8') as f:
+             f.write('__version__ = "dev"\n')
 
 def create_release():
     try:
@@ -95,45 +126,53 @@ def create_release():
         # 创建目录结构
         release_dir, archive_dir, resource_dir = setup_release_dirs(version)
         
-        # 构建可执行文件
-        logging.info(f"开始构建版本 {version} 的可执行文件...")
-        # 如果需要将版本号传入 PyInstaller，可以在这里修改命令，例如:
-        # os.system(f"pyinstaller main.spec --name screen-searcher-v{version}")
-        exit_code = os.system("pyinstaller main.spec")
-        
-        if exit_code != 0:
-            raise RuntimeError("PyInstaller 构建失败")
-        
-        # 检查生成的文件是否存在
-        exe_path = Path('dist/screen-searcher.exe')
-        if not exe_path.exists():
-             # 尝试找找看有没有带 .exe 后缀的文件 (防止 spec 文件里改了名字)
-             exes = list(Path('dist').glob('*.exe'))
-             if exes:
-                 exe_path = exes[0]
-                 logging.warning(f"未找到 screen-searcher.exe，但找到了 {exe_path.name}，将使用它。")
-             else:
-                 raise FileNotFoundError("dist 目录下未找到 .exe 文件")
+        write_version_file(version) 
 
-        # 复制文件
-        shutil.copy2(exe_path, release_dir / 'screen-searcher.exe')
-        
-        if os.path.exists('resources'):
-            shutil.copytree('resources', resource_dir, dirs_exist_ok=True)
-        else:
-            logging.warning("未找到 resources 目录，跳过资源复制")
+        try:
+            # 构建可执行文件
+            logging.info(f"开始构建版本 {version} 的可执行文件...")
+            # 如果需要将版本号传入 PyInstaller，可以在这里修改命令，例如:
+            # os.system(f"pyinstaller main.spec --name screen-searcher-v{version}")
+            exit_code = os.system("pyinstaller main.spec")
             
-        if os.path.exists('README.md'):
-            shutil.copy2('README.md', release_dir / 'README.md')
-        
-        # 创建便携版压缩包
-        version_str = version.replace(".", "_")
-        zip_path = archive_dir / f'screen_searcher_v_{version_str}_portable.zip'
-        logging.info("开始创建便携版压缩包...")
-        zip_directory(release_dir, zip_path)
-        
+            if exit_code != 0:
+                raise RuntimeError("PyInstaller 构建失败")
+            
+            # 检查生成的文件是否存在
+            exe_path = Path('dist/screen-searcher.exe')
+            if not exe_path.exists():
+                # 尝试找找看有没有带 .exe 后缀的文件 (防止 spec 文件里改了名字)
+                exes = list(Path('dist').glob('*.exe'))
+                if exes:
+                    exe_path = exes[0]
+                    logging.warning(f"未找到 screen-searcher.exe，但找到了 {exe_path.name}，将使用它。")
+                else:
+                    raise FileNotFoundError("dist 目录下未找到 .exe 文件")
+
+            # 复制文件
+            shutil.copy2(exe_path, release_dir / 'screen-searcher.exe')
+            
+            if os.path.exists('resources'):
+                shutil.copytree('resources', resource_dir, dirs_exist_ok=True)
+            else:
+                logging.warning("未找到 resources 目录，跳过资源复制")
+                
+            if os.path.exists('README.md'):
+                shutil.copy2('README.md', release_dir / 'README.md')
+            
+            # 创建便携版压缩包
+            version_str = version.replace(".", "_")
+            zip_path = archive_dir / f'screen_searcher_v_{version_str}_portable.zip'
+            logging.info("开始创建便携版压缩包...")
+            zip_directory(release_dir, zip_path)
+            
+            logging.info(f"Release {version} 创建成功!")
+            logging.info(f"文件位置: {zip_path}")
+        finally:
+            # 恢复 version.py
+            restore_version_file()
+
         logging.info(f"Release {version} 创建成功!")
-        logging.info(f"文件位置: {zip_path}")
         
     except Exception as e:
         logging.error(f"发布过程失败: {str(e)}")
