@@ -3,7 +3,7 @@ name: 构建与发布
 on:
   push:
     tags:
-      - 'v*'  # 当推送带有 v 前缀的标签时触发，例如 v1.0.1
+      - 'v*'  # 仅在推送 v 开头的标签时触发
 
 permissions:
   contents: write
@@ -28,39 +28,42 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
         
-    - name: 提取版本号
+    - name: 从 Tag 提取版本号
       id: get_version
       shell: bash
       run: |
-        VERSION=$(cat VERSION)
+        # GITHUB_REF 的格式通常是 "refs/tags/v1.0.1"
+        # 使用 Shell 参数扩展功能移除 "refs/tags/v" 前缀
+        VERSION=${GITHUB_REF#refs/tags/v}
+        
+        echo "🚀 检测到 Git Tag 版本: $VERSION"
+        
+        # 写入环境变量 VERSION (例如 1.0.1)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
-        echo "TAG_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+        
+        # 生成下划线版本 (例如 1_0_1)，用于文件名
         VERSION_UNDERSCORE=${VERSION//./_}
         echo "VERSION_UNDERSCORE=$VERSION_UNDERSCORE" >> $GITHUB_ENV
         
-    - name: 验证版本号一致性
-      shell: bash
-      run: |
-        if [ "$VERSION" != "$TAG_VERSION" ]; then
-          echo "错误: 标签版本 ($TAG_VERSION) 与 VERSION 文件中的版本 ($VERSION) 不匹配"
-          exit 1
-        fi
-        
     - name: 运行发布脚本
+      env:
+        BUILD_VERSION: ${{ env.VERSION }}
       run: python release.py
       
     - name: 上传便携版压缩包
       uses: actions/upload-artifact@v4
       with:
-        name: portable-package
-        path: releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
+        name: portable-package-v${{ env.VERSION }}
+        # 使用通配符 *.zip 增加容错性，防止 Python 生成路径细微差异报错
+        path: releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
+        if-no-files-found: error
         
     - name: 创建 GitHub Release
       id: create_release
       uses: softprops/action-gh-release@v2
       with:
         name: Screen Searcher v${{ env.VERSION }}
-        draft: true
+        draft: false
         prerelease: false
         generate_release_notes: true
         body: |
@@ -69,10 +72,10 @@ jobs:
           感谢使用 Screen Searcher！
           
           ### 📋 版本信息
-          - 版本: v${{ env.VERSION }}
-          - 发布日期: ${{ github.event.release.published_at || github.run_started_at }}
+          - **版本**: v${{ env.VERSION }}
+          - **构建时间**: ${{ github.run_started_at }}
           
-          <!-- GitHub会根据提交和PR标签自动生成发布说明 -->
+          <!-- 下方变更日志由 GitHub 自动生成 -->
         files: |
-          releases/${{ env.VERSION }}/archives/screen_searcher_v_${{ env.VERSION_UNDERSCORE }}_portable.zip
+          releases/${{ env.VERSION }}/archives/screen_searcher_*.zip
         token: ${{ secrets.GITHUB_TOKEN }}
